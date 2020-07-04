@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -261,6 +262,52 @@ public class MainControllerTest {
         mockMvc.perform(get("")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(employee)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void withPathVariable() throws Exception {
+        mockMvc.perform(get("/withPathVariable/1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(equalTo("1")));
+    }
+
+    @Test
+    public void whenPathIsNegative() throws Exception {
+        mockMvc.perform(get("/withPathVariable/-1"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenPathIsZero() throws Exception {
+        mockMvc.perform(get("/withPathVariable/0"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void withRequestParam() throws Exception {
+        mockMvc.perform(get("/withRequestParam?id=1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(equalTo("1")));
+    }
+
+    @Test
+    public void whenRequestParamIsNegative() throws Exception {
+        mockMvc.perform(get("/withRequestParam?id=-1"))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void whenRequestParamIsZero() throws Exception {
+        mockMvc.perform(get("/withRequestParam?id=0"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
